@@ -199,7 +199,7 @@ __attribute__ ((section(".isr_vector"))) const DeviceVectors exception_table =
 {
 	/* Configure Initial Stack Pointer, using linker-generated symbols */
 	(void*) (&__StackTop),
-	
+
 	/* Cortex-M handlers */
 	(void*) Reset_Handler,
 	(void*) NMI_Handler,

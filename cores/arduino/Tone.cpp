@@ -52,7 +52,7 @@ volatile bool firstTimeRunning = false;
 static inline void resetTC (Tc* TCx)
 {
   // Disable TCx
-  TCx->COUNT16.CTRLA.reg &= ~TC_CTRLA_ENABLE;
+  TCx->COUNT16.CTRLA.reg = TCx->COUNT16.CTRLA.reg & ~TC_CTRLA_ENABLE;
   WAIT_TC16_REGS_SYNC(TCx)
 
   // Reset TCx
@@ -79,11 +79,11 @@ void tone (uint32_t outputPin, uint32_t frequency, uint32_t duration)
   // Configure interrupt request
   NVIC_DisableIRQ(TONE_TC_IRQn);
   NVIC_ClearPendingIRQ(TONE_TC_IRQn);
-  
+
   if(!firstTimeRunning)
   {
     firstTimeRunning = true;
-    
+
     NVIC_SetPriority(TONE_TC_IRQn, 5);
 
 #if defined(__SAMD51__)
@@ -94,7 +94,7 @@ void tone (uint32_t outputPin, uint32_t frequency, uint32_t duration)
     while (GCLK->STATUS.bit.SYNCBUSY);
 #endif
   }
-  
+
   if (toneIsActive && (outputPin != lastOutputPin))
     noTone(lastOutputPin);
 
@@ -107,9 +107,9 @@ void tone (uint32_t outputPin, uint32_t frequency, uint32_t duration)
 
   ccValue = toneMaxFrequency / frequency - 1;
   prescalerConfigBits = TC_CTRLA_PRESCALER_DIV1;
-  
+
   uint8_t i = 0;
-  
+
   while(ccValue > TONE_TC_TOP)
   {
     ccValue = toneMaxFrequency / frequency / (2<<i) - 1;
@@ -117,23 +117,23 @@ void tone (uint32_t outputPin, uint32_t frequency, uint32_t duration)
     if(i == 4 || i == 6 || i == 8) //DIV32 DIV128 and DIV512 are not available
      i++;
   }
-  
+
   switch(i-1)
   {
     case 0: prescalerConfigBits = TC_CTRLA_PRESCALER_DIV2; break;
-    
+
     case 1: prescalerConfigBits = TC_CTRLA_PRESCALER_DIV4; break;
-    
+
     case 2: prescalerConfigBits = TC_CTRLA_PRESCALER_DIV8; break;
-    
+
     case 3: prescalerConfigBits = TC_CTRLA_PRESCALER_DIV16; break;
-    
+
     case 5: prescalerConfigBits = TC_CTRLA_PRESCALER_DIV64; break;
-      
+
     case 7: prescalerConfigBits = TC_CTRLA_PRESCALER_DIV256; break;
-    
+
     case 9: prescalerConfigBits = TC_CTRLA_PRESCALER_DIV1024; break;
-    
+
     default: break;
   }
 
@@ -143,14 +143,14 @@ void tone (uint32_t outputPin, uint32_t frequency, uint32_t duration)
 
   uint16_t tmpReg = 0;
   tmpReg |= TC_CTRLA_MODE_COUNT16;  // Set Timer counter Mode to 16 bits
-  
+
 #if defined(__SAMD51__)
 	TONE_TC->COUNT16.WAVE.reg = TC_WAVE_WAVEGEN_MFRQ;  // Set TONE_TC mode as match frequency
 #else
   tmpReg |= TC_CTRLA_WAVEGEN_MFRQ;  // Set TONE_TC mode as match frequency
 #endif
   tmpReg |= prescalerConfigBits;
-  TONE_TC->COUNT16.CTRLA.reg |= tmpReg;
+  TONE_TC->COUNT16.CTRLA.reg = TONE_TC->COUNT16.CTRLA.reg | tmpReg;
   WAIT_TC16_REGS_SYNC(TONE_TC)
 
   TONE_TC->COUNT16.CC[TONE_TC_CHANNEL].reg = (uint16_t) ccValue;
@@ -162,7 +162,7 @@ void tone (uint32_t outputPin, uint32_t frequency, uint32_t duration)
 
   // Enable the TONE_TC interrupt request
   TONE_TC->COUNT16.INTENSET.bit.MC0 = 1;
-  
+
   if (outputPin != lastOutputPin)
   {
     lastOutputPin = outputPin;
@@ -172,9 +172,9 @@ void tone (uint32_t outputPin, uint32_t frequency, uint32_t duration)
   }
 
   // Enable TONE_TC
-  TONE_TC->COUNT16.CTRLA.reg |= TC_CTRLA_ENABLE;
+  TONE_TC->COUNT16.CTRLA.reg = TONE_TC->COUNT16.CTRLA.reg | TC_CTRLA_ENABLE;
   WAIT_TC16_REGS_SYNC(TONE_TC)
-  
+
   NVIC_EnableIRQ(TONE_TC_IRQn);
 }
 
@@ -207,7 +207,7 @@ void Tone_Handler (void)
     *portToggleRegister = portBitMask;
 
     if (toggleCount > 0)
-      --toggleCount;
+      toggleCount = toggleCount - 1;
 
     // Clear the interrupt
     TONE_TC->COUNT16.INTFLAG.bit.MC0 = 1;

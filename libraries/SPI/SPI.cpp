@@ -390,7 +390,10 @@ void SPIClass::transfer(const void *txbuf, void *rxbuf, size_t count,
       if(bytesThisDescriptor > 65535) { // Limit each descriptor
         bytesThisDescriptor = 65535;    // to 65535 (not 65536) bytes
       }
-      rDesc->BTCNT.reg = wDesc->BTCNT.reg = bytesThisDescriptor;
+
+      rDesc->BTCNT.reg = bytesThisDescriptor;
+      wDesc->BTCNT.reg = bytesThisDescriptor;
+
       if(rxbuf) { // Read-only or read+write
         // Auto-inc addresses in DMA descriptors must point to END of data.
         // Buf pointers would advance at end of loop anyway, do it now...
@@ -417,7 +420,8 @@ void SPIClass::transfer(const void *txbuf, void *rxbuf, size_t count,
         // A write-only transfer doesn't use the read descriptor list, but
         // it's quicker to build it (full of nonsense) anyway than to check.
       } else { // No more data, end descriptor linked lists
-        rDesc->DESCADDR.reg = wDesc->DESCADDR.reg = 0;
+        rDesc->DESCADDR.reg = 0;
+        wDesc->DESCADDR.reg = 0;
       }
     }
 

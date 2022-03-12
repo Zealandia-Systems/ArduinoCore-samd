@@ -93,12 +93,15 @@ void SERCOM::initUART(SercomUartMode mode, SercomUartSampleRate sampleRate, uint
 void SERCOM::initFrame(SercomUartCharSize charSize, SercomDataOrder dataOrder, SercomParityMode parityMode, SercomNumberStopBit nbStopBits)
 {
   //Setting the CTRLA register
-  sercom->USART.CTRLA.reg |=
+  sercom->USART.CTRLA.reg =
+    sercom->USART.CTRLA.reg |
     SERCOM_USART_CTRLA_FORM((parityMode == SERCOM_NO_PARITY ? 0 : 1) ) |
     dataOrder << SERCOM_USART_CTRLA_DORD_Pos;
 
   //Setting the CTRLB register
-  sercom->USART.CTRLB.reg |= SERCOM_USART_CTRLB_CHSIZE(charSize) |
+  sercom->USART.CTRLB.reg =
+    sercom->USART.CTRLB.reg |
+    SERCOM_USART_CTRLB_CHSIZE(charSize) |
     nbStopBits << SERCOM_USART_CTRLB_SBMODE_Pos |
     (parityMode == SERCOM_NO_PARITY ? 0 : parityMode) <<
       SERCOM_USART_CTRLB_PMODE_Pos; //If no parity use default value
@@ -107,11 +110,16 @@ void SERCOM::initFrame(SercomUartCharSize charSize, SercomDataOrder dataOrder, S
 void SERCOM::initPads(SercomUartTXPad txPad, SercomRXPad rxPad)
 {
   //Setting the CTRLA register
-  sercom->USART.CTRLA.reg |= SERCOM_USART_CTRLA_TXPO(txPad) |
-                             SERCOM_USART_CTRLA_RXPO(rxPad);
+  sercom->USART.CTRLA.reg =
+    sercom->USART.CTRLA.reg |
+    SERCOM_USART_CTRLA_TXPO(txPad) |
+    SERCOM_USART_CTRLA_RXPO(rxPad);
 
   // Enable Transceiver and Receiver
-  sercom->USART.CTRLB.reg |= SERCOM_USART_CTRLB_TXEN | SERCOM_USART_CTRLB_RXEN ;
+  sercom->USART.CTRLB.reg =
+    sercom->USART.CTRLB.reg |
+    SERCOM_USART_CTRLB_TXEN |
+    SERCOM_USART_CTRLB_RXEN ;
 }
 
 void SERCOM::resetUART()
@@ -266,8 +274,10 @@ void SERCOM::initSPIClock(SercomSpiClockMode clockMode, uint32_t baudrate)
     cpol = 1;
 
   //Setting the CTRLA register
-  sercom->SPI.CTRLA.reg |= ( cpha << SERCOM_SPI_CTRLA_CPHA_Pos ) |
-                           ( cpol << SERCOM_SPI_CTRLA_CPOL_Pos );
+  sercom->SPI.CTRLA.reg =
+    sercom->SPI.CTRLA.reg |
+    ( cpha << SERCOM_SPI_CTRLA_CPHA_Pos ) |
+    ( cpol << SERCOM_SPI_CTRLA_CPOL_Pos );
 
   //Synchronous arithmetic
   sercom->SPI.BAUD.reg = calculateBaudrateSynchronous(baudrate);
@@ -458,7 +468,7 @@ void SERCOM::initSlaveWIRE( uint8_t ucAddress, bool enableGeneralCall )
   sercom->I2CS.ADDR.reg = SERCOM_I2CS_ADDR_ADDR( ucAddress & 0x7Ful ) | // 0x7F, select only 7 bits
                           SERCOM_I2CS_ADDR_ADDRMASK( 0x00ul );          // 0x00, only match exact address
   if (enableGeneralCall) {
-    sercom->I2CS.ADDR.reg |= SERCOM_I2CS_ADDR_GENCEN;                   // enable general call (address 0x00)
+    sercom->I2CS.ADDR.reg = sercom->I2CS.ADDR.reg | SERCOM_I2CS_ADDR_GENCEN;                   // enable general call (address 0x00)
   }
 
   // Set the interrupt register

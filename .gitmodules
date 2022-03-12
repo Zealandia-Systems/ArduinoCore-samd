@@ -3,4 +3,4 @@
 	url = https://github.com/adafruit/Adafruit_TinyUSB_Arduino.git
 [submodule "libraries/Adafruit_ZeroDMA"]
 	path = libraries/Adafruit_ZeroDMA
-	url = https://github.com/adafruit/Adafruit_ZeroDMA
+	url = https://github.com/Zealandia-Systems/Adafruit_ZeroDMA

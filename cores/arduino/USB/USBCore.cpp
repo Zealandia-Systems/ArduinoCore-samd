@@ -332,22 +332,22 @@ void USBDeviceClass::init()
 
 	/* Enable USB clock */
 #if defined(__SAMD51__)
-	MCLK->APBBMASK.reg |= MCLK_APBBMASK_USB;
-	MCLK->AHBMASK.reg |= MCLK_AHBMASK_USB;
-	
+	MCLK->APBBMASK.reg = MCLK->APBBMASK.reg |MCLK_APBBMASK_USB;
+	MCLK->AHBMASK.reg = MCLK->AHBMASK.reg | MCLK_AHBMASK_USB;
+
 	// Set up the USB DP/DN pins
 	PORT->Group[0].PINCFG[PIN_PA24H_USB_DM].bit.PMUXEN = 1;
-	PORT->Group[0].PMUX[PIN_PA24H_USB_DM/2].reg &= ~(0xF << (4 * (PIN_PA24H_USB_DM & 0x01u)));
-	PORT->Group[0].PMUX[PIN_PA24H_USB_DM/2].reg |= MUX_PA24H_USB_DM << (4 * (PIN_PA24H_USB_DM & 0x01u));
+	PORT->Group[0].PMUX[PIN_PA24H_USB_DM/2].reg = PORT->Group[0].PMUX[PIN_PA24H_USB_DM/2].reg & ~(0xF << (4 * (PIN_PA24H_USB_DM & 0x01u)));
+	PORT->Group[0].PMUX[PIN_PA24H_USB_DM/2].reg = PORT->Group[0].PMUX[PIN_PA24H_USB_DM/2].reg | MUX_PA24H_USB_DM << (4 * (PIN_PA24H_USB_DM & 0x01u));
 	PORT->Group[0].PINCFG[PIN_PA25H_USB_DP].bit.PMUXEN = 1;
-	PORT->Group[0].PMUX[PIN_PA25H_USB_DP/2].reg &= ~(0xF << (4 * (PIN_PA25H_USB_DP & 0x01u)));
-	PORT->Group[0].PMUX[PIN_PA25H_USB_DP/2].reg |= MUX_PA25H_USB_DP << (4 * (PIN_PA25H_USB_DP & 0x01u));
-	
-	
+	PORT->Group[0].PMUX[PIN_PA25H_USB_DP/2].reg = PORT->Group[0].PMUX[PIN_PA25H_USB_DP/2].reg & ~(0xF << (4 * (PIN_PA25H_USB_DP & 0x01u)));
+	PORT->Group[0].PMUX[PIN_PA25H_USB_DP/2].reg = PORT->Group[0].PMUX[PIN_PA25H_USB_DP/2].reg  | MUX_PA25H_USB_DP << (4 * (PIN_PA25H_USB_DP & 0x01u));
+
+
 	GCLK->PCHCTRL[USB_GCLK_ID].reg = GCLK_PCHCTRL_GEN_GCLK1_Val | (1 << GCLK_PCHCTRL_CHEN_Pos);
 #else
 	PM->APBBMASK.reg |= PM_APBBMASK_USB;
-	
+
 	// Set up the USB DP/DN pins
 	PORT->Group[0].PINCFG[PIN_PA24G_USB_DM].bit.PMUXEN = 1;
 	PORT->Group[0].PMUX[PIN_PA24G_USB_DM/2].reg &= ~(0xF << (4 * (PIN_PA24G_USB_DM & 0x01u)));
@@ -953,7 +953,7 @@ void USBDeviceClass::ISRHandler()
 		// check whether the one-shot period has elapsed.  if so, turn off the LED
 #ifdef PIN_LED_TXL
 		if (txLEDPulse > 0) {
-			txLEDPulse--;
+			txLEDPulse = txLEDPulse - 1;
 			if (txLEDPulse == 0)
 				digitalWrite(PIN_LED_TXL, HIGH);
 		}
@@ -961,7 +961,7 @@ void USBDeviceClass::ISRHandler()
 
 #ifdef PIN_LED_RXL
 		if (rxLEDPulse > 0) {
-			rxLEDPulse--;
+			rxLEDPulse = rxLEDPulse - 1;
 			if (rxLEDPulse == 0)
 				digitalWrite(PIN_LED_RXL, HIGH);
 		}

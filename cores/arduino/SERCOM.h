@@ -94,6 +94,7 @@ typedef enum
 	UART_TX_PAD_0 = 0x0ul,  // Only for UART
 	UART_TX_PAD_2 = 0x1ul,  // Only for UART
 	UART_TX_RTS_CTS_PAD_0_2_3 = 0x2ul,  // Only for UART with TX on PAD0, RTS on PAD2 and CTS on PAD3
+  UART_TX_RTS_PAD_0_2 = 0x3ul,
 } SercomUartTXPad;
 
 typedef enum

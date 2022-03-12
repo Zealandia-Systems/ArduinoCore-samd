@@ -11,7 +11,7 @@
 
 void USBDevice_SAMD21G18x::reset() {
     usb.CTRLA.bit.SWRST = 1;
-    memset(EP, 0, sizeof(EP));
+    memset((void*)EP, 0, sizeof(EP));
     while (usb.SYNCBUSY.bit.SWRST || usb.SYNCBUSY.bit.ENABLE) {}
     usb.DESCADD.reg = (uint32_t)(&EP);
 }

@@ -20,6 +20,7 @@
 #ifndef Binary_h
 #define Binary_h
 
+/*
 #define B0 0
 #define B00 0
 #define B000 0
@@ -530,5 +531,6 @@
 #define B11111101 253
 #define B11111110 254
 #define B11111111 255
+*/
 
 #endif

@@ -133,6 +133,16 @@ size_t Print::print(const Printable& x)
   return x.printTo(*this);
 }
 
+size_t Print::print(const std::string_view& v) {
+	return write(v.data(), v.length());
+}
+
+size_t Print::print(const void* v) {
+	printf("0x%08x", v);
+
+	return 10;
+}
+
 size_t Print::println(void)
 {
   return write("\r\n");
@@ -220,6 +230,18 @@ size_t Print::println(const Printable& x)
   size_t n = print(x);
   n += println();
   return n;
+}
+
+size_t Print::println(const std::string_view& v) {
+	size_t n = print(v);
+	n += println();
+	return n;
+}
+
+size_t Print::println(const void* v) {
+	size_t n = print(v);
+	n += println();
+	return n;
 }
 
 void Print::printf(const char format[], ...)

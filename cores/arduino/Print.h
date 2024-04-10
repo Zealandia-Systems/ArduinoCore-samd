@@ -22,6 +22,7 @@
 #include <inttypes.h>
 #include <stdio.h> // for size_t
 #include <stdarg.h> // for printf
+#include <string_view>
 #define PRINTF_BUF 160
 
 #include "WString.h"
@@ -74,6 +75,8 @@ class Print
     size_t print(unsigned long long, int = DEC);
     size_t print(double, int = 2);
     size_t print(const Printable&);
+		size_t print(const std::string_view&);
+		size_t print(const void*);
 
     size_t println(const __FlashStringHelper *);
     size_t println(const String &s);
@@ -88,6 +91,8 @@ class Print
     size_t println(unsigned long long, int = DEC);
     size_t println(double, int = 2);
     size_t println(const Printable&);
+		size_t println(const std::string_view&);
+		size_t println(const void*);
     size_t println(void);
 
     void printf(const char[], ...);
